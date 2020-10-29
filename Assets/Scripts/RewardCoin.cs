@@ -1,17 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.Vehicles.Car;
 
-public class Coin : MonoBehaviour
+public class RewardCoin : MonoBehaviour
 {
     public AudioSource sfx;
     public bool fadeOut = false;
+    public int score = 1;
 
     private bool hitable = true;
     private float fadePerSecond = 2.5f;
     // Start is called before the first frame update
     void Start()
     {
+        
         // sfx = GetComponent<AudioSource>();
     }
 
@@ -22,6 +25,7 @@ public class Coin : MonoBehaviour
         transform.Rotate(0, 90 * Time.deltaTime, 0);
         if (fadeOut)
         {
+            transform.position = transform.position + new Vector3(0, 0.1f, 0);
             var material = GetComponent<Renderer>().material;
             var color = material.color;
 
@@ -36,12 +40,14 @@ public class Coin : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Object name:" + other.name);
+        //Debug.Log("Object name:" + other.name);
         if (other.name == "ColliderFront" && hitable == true)
         {
+            GameEvents.current.rewardCollect(score);
+
             hitable = false;
-            MyCar myCar = other.GetComponentInParent(typeof(MyCar)) as MyCar;
-            myCar.points++;
+            CarAudio myCar = other.GetComponentInParent(typeof(CarAudio)) as CarAudio;
+            //myCar.points++;
             sfx.Play();
 
             fadeOut = true;

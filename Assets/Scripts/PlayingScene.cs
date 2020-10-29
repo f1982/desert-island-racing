@@ -1,25 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class MyCar : MonoBehaviour
+public class PlayingScene : MonoBehaviour
 {
-    public int points = 0;
-
+    public int totalScore = 19;
+    public int currentScore = 0;
+    public Text scoreText;
     // Start is called before the first frame update
     void Start()
     {
-
+        GameEvents.current.onRewardCollect += OnRewardCollect;
+        GameEvents.current.onTimeoutTrigger += OnTimeoutTrigger;
+        scoreText.text = currentScore + "/" + totalScore;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnRewardCollect(int score)
     {
-
+        currentScore += score;
+        scoreText.text = currentScore+"/"+totalScore;
+        Debug.Log("OnRewardCollect currentScore :" + currentScore);
+        if (currentScore >= totalScore)
+        {
+            SceneManager.LoadScene(2);
+        }
     }
 
-    private void OnGUI()
+    private void OnTimeoutTrigger()
     {
-        GUI.Label(new Rect(10, 10, 100, 20), "Score: " + points);
+        SceneManager.LoadScene(3);
+    }
+
+    private void OnDestroy()
+    {
+        GameEvents.current.onRewardCollect -= OnRewardCollect;
+        GameEvents.current.onTimeoutTrigger -= OnTimeoutTrigger;
     }
 }
